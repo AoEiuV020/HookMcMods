@@ -12,7 +12,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 @SuppressWarnings("RedundantThrows")
 public class MainHook implements IXposedHookLoadPackage {
     @SuppressWarnings("All")
-    private static final boolean DEBUG = BuildConfig.DEBUG && false;
+    private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -25,9 +25,24 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookAdMobManager(lpparam);
                 hookYandexAdsManager(lpparam);
                 hookLoading(lpparam);
+                hookEarn(lpparam);
             }
         });
 
+    }
+
+    private void hookEarn(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(99999999);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "n21",
+                lpparam.classLoader, "b", r
+        );
     }
 
     private void hookLoading(XC_LoadPackage.LoadPackageParam lpparam) {
