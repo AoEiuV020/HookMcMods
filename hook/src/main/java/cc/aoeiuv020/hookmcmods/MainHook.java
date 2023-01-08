@@ -23,12 +23,14 @@ public class MainHook implements IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!(param.args[0] instanceof Application)) return;
                 hookDebug(lpparam);
+/*
                 hookAdMobManager(lpparam);
                 hookYandexAdsManager(lpparam);
                 hookLoading(lpparam);
                 hookEarn(lpparam);
                 hookShowAd(lpparam);
                 hookBack(lpparam);
+*/
                 hookAccess(lpparam);
             }
         });
