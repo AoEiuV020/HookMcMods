@@ -29,9 +29,24 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookEarn(lpparam);
                 hookShowAd(lpparam);
                 hookBack(lpparam);
+                hookAccess(lpparam);
             }
         });
 
+    }
+
+    private void hookAccess(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(true);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "o01",
+                lpparam.classLoader, "f", r
+        );
     }
 
     private void hookBack(XC_LoadPackage.LoadPackageParam lpparam) {
