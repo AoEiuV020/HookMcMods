@@ -28,9 +28,25 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookLoading(lpparam);
                 hookEarn(lpparam);
                 hookShowAd(lpparam);
+                hookBack(lpparam);
             }
         });
 
+    }
+
+    private void hookBack(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                XposedHelpers.callMethod(param.thisObject, "finish");
+                param.setResult(null);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "com.appscreat.project.activity.ActivityItem",
+                lpparam.classLoader, "onBackPressed", r
+        );
     }
 
     private void hookEarn(XC_LoadPackage.LoadPackageParam lpparam) {
