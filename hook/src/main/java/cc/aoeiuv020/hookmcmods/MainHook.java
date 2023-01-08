@@ -32,9 +32,27 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookBack(lpparam);
 */
                 hookAccess(lpparam);
+                hookRate(lpparam);
             }
         });
 
+    }
+
+    private void hookRate(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(null);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "zp0",
+                lpparam.classLoader, "z",
+                XposedHelpers.findClass("androidx.fragment.app.FragmentManager", lpparam.classLoader),
+                XposedHelpers.findClass("java.lang.String", lpparam.classLoader),
+                r
+        );
     }
 
     private void hookAccess(XC_LoadPackage.LoadPackageParam lpparam) {
