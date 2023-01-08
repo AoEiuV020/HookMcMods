@@ -22,10 +22,39 @@ public class MainHook implements IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!(param.args[0] instanceof Application)) return;
                 hookDebug(lpparam);
-                hookAdManager(lpparam);
+                hookAdMobManager(lpparam);
+                hookYandexAdsManager(lpparam);
             }
         });
 
+    }
+
+    private void hookYandexAdsManager(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(false);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "com.appscreat.project.ads.yandex.YandexAdsManager",
+                lpparam.classLoader, "isYandexAdsEnabled", r
+        );
+    }
+
+    private void hookAdMobManager(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(false);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                "com.appscreat.project.ads.admob.AdMobManager",
+                lpparam.classLoader, "isAdMobEnabled", r
+        );
     }
 
     private void log(XC_MethodHook.MethodHookParam param) {
