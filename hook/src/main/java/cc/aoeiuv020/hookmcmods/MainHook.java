@@ -1,5 +1,6 @@
 package cc.aoeiuv020.hookmcmods;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Instrumentation;
 
@@ -12,7 +13,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 @SuppressWarnings("RedundantThrows")
 public class MainHook implements IXposedHookLoadPackage {
     @SuppressWarnings("All")
-    private static final boolean DEBUG = BuildConfig.DEBUG && true;
+    private static final boolean DEBUG = BuildConfig.DEBUG && false;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -26,6 +27,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookYandexAdsManager(lpparam);
                 hookLoading(lpparam);
                 hookEarn(lpparam);
+                hookShowAd(lpparam);
             }
         });
 
@@ -42,6 +44,24 @@ public class MainHook implements IXposedHookLoadPackage {
         XposedHelpers.findAndHookMethod(
                 "n21",
                 lpparam.classLoader, "b", r
+        );
+    }
+
+    private void hookShowAd(XC_LoadPackage.LoadPackageParam lpparam) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                log(param);
+                param.setResult(null);
+            }
+        };
+        XposedHelpers.findAndHookMethod(
+                "com.appscreat.project.ads.yandex.YandexAdsInterstitial",
+                lpparam.classLoader, "onShowAd", Activity.class, r
+        );
+        XposedHelpers.findAndHookMethod(
+                "com.appscreat.project.ads.admob.AdMobInterstitial",
+                lpparam.classLoader, "onShowAd", Activity.class, r
         );
     }
 
@@ -111,5 +131,4 @@ public class MainHook implements IXposedHookLoadPackage {
                 lpparam.classLoader, "onResume", r
         );
     }
-
 }
